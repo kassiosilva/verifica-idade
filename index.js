@@ -10,27 +10,42 @@ nunjucks.configure('views', {
 })
 
 app.set('view engine', 'njk')
-
 app.use(express.urlencoded({ extended: false }))
+
+const checaIdadeExist = (req, res, next) => {
+  const { age } = req.query
+
+  if (!age) {
+    return res.redirect('/')
+  }
+
+  return next()
+}
 
 app.get('/', (req, res) => {
   return res.render('form')
 })
 
+app.get('/major', checaIdadeExist, (req, res) => {
+  const { age } = req.query
+
+  return res.render('major', { age })
+})
+
+app.get('/minor', checaIdadeExist, (req, res) => {
+  const { age } = req.query
+
+  return res.render('minor', { age })
+})
+
 app.post('/check', (req, res) => {
-  if (req.body.age >= 18) {
-    return res.redirect(`/major/?age=${req.body.age}`)
+  const { age } = req.body
+
+  if (age >= 18) {
+    return res.redirect(`/major/?age=${age}`)
   } else {
-    return res.redirect(`/minor/?age=${req.body.age}`)
+    return res.redirect(`/minor/?age=${age}`)
   }
 })
 
-app.get('/major', (req, res) => {
-  return res.send(`Você é maior de idade e possui ${req.query.age} anos`)
-})
-
-app.get('/minor', (req, res) => {
-  return res.send(`Você é menor de idade e posssui ${req.query.age} anos`)
-})
-
-app.listen(3000)
+app.listen(13000)
